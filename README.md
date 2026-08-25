@@ -1,45 +1,50 @@
 <div align="center">
 
-<img src="./ascii.svg" width="460" alt="Andrii Drok"/>
+<img src="./ascii.svg" width="460" alt="jd314"/>
 
 <img src="./stats.svg" width="620" alt="Contributions in the last year"/>
 
-[andriidrok.com](https://andriidrok.com) &nbsp;·&nbsp;
-[instagram](https://www.instagram.com/andrii_drok/) &nbsp;·&nbsp;
-[linkedin](https://www.linkedin.com/in/andriidrok/) &nbsp;·&nbsp;
-[email](mailto:clb@mirasvit.com)
+<p align="center">
+  <a href="https://www.linkedin.com/in/jd314/"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white" alt="LinkedIn"/></a>
+  &nbsp;
+  <a href="https://github.com/jd314"><img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white" alt="GitHub"/></a>
+  &nbsp;
+  <a href="mailto:david.brpo@hotmail.com"><img src="https://img.shields.io/badge/Email-0078D4?style=flat-square&logo=microsoftoutlook&logoColor=white" alt="Email"/></a>
+</p>
+
+[linkedin](https://www.linkedin.com/in/jd314/) &nbsp;·&nbsp;
+[github](https://github.com/jd314) &nbsp;·&nbsp;
+[email](mailto:david.brpo@hotmail.com)
 
 </div>
 
 <img src="./hd-about.svg" width="620" alt="about"/>
 
-> CS student at San Francisco State, in the SF Bay Area.<br>
-> Small, sharp tools over big vague ideas.
+> Physics student & undergraduate researcher in Optics and Photonics at Universidad de Antioquia (UdeA), Colombia.<br>
+> Bridging experimental physics, mathematical modeling, scientific computing, and data intelligence from first principles.
 
-I build fast, test on real users, and kill what doesn't work. Right now that's<br>
-[autobroll](https://github.com/andriidrok1/autobroll) — an AI short-form video editor that runs in the browser. Also<br>
-deep into markets: Pine Script indicators, backtesting, on-chain data.
+I investigate physical phenomena across their complete lifecycle — from **laboratory instrumentation and theoretical modeling** to **computational simulation, high-throughput data acquisition, and machine learning**.
+
+As a researcher in the **Optics and Photonics Group (UdeA)**, my academic background in physics, mathematics, and experimental research has developed my ability to approach complex problems from foundational laws, while building reproducible computational tools, automated workflows, and analytical systems to solve them.
 
 <img src="./hd-stack.svg" width="620" alt="stack"/>
 
-<samp>python &nbsp; typescript &nbsp; javascript &nbsp; react &nbsp; node &nbsp; three.js &nbsp; fastapi &nbsp; postgres &nbsp; docker &nbsp; git &nbsp; linux</samp>
+<samp>python &nbsp; c++ &nbsp; matlab &nbsp; pytorch &nbsp; scikit-learn &nbsp; pandas &nbsp; numpy &nbsp; scipy &nbsp; opencv &nbsp; mlops &nbsp; docker &nbsp; git &nbsp; linux</samp>
+
+**Physics & Optics** &nbsp;·&nbsp; <samp>optical systems, instrumentation, experimental design, theoretical modeling</samp><br>
+**Computation & Sim** &nbsp;·&nbsp; <samp>numerical methods, scientific programming, simulations, automated workflows</samp><br>
+**Data & AI Systems** &nbsp;·&nbsp; <samp>machine learning, MLOps, data engineering, ETL pipelines, business intelligence</samp>
 
 <img src="./hd-projects.svg" width="620" alt="projects"/>
 
-**[autobroll](https://github.com/andriidrok1/autobroll)** &nbsp;·&nbsp; <samp>typescript, remotion</samp><br>
-AI short-form video editor in the browser. Auto captions with accents,<br>
-drag-and-retime editing, b-roll placement: transcript in, rendered video out.
+**[optics-photonics-research](https://github.com/jd314)** &nbsp;·&nbsp; <samp>python, numpy, scipy, matplotlib</samp><br>
+Computational modeling, wave propagation simulations, and experimental data acquisition pipelines for optics and photonics research.
 
-**[strategy-checker](https://github.com/andriidrok1/strategy-checker)** &nbsp;·&nbsp; <samp>python</samp><br>
-Describe a trading strategy in plain English, get a real backtest with<br>
-statistical validation. Exposes curve-fitting, not alpha.
+**[scientific-data-pipelines](https://github.com/jd314)** &nbsp;·&nbsp; <samp>python, pandas, mlops, docker</samp><br>
+End-to-end automated pipelines for physical experiment logging, data processing, statistical validation, and reproducible scientific workflows.
 
-**[compound](https://github.com/andriidrok1/compound)** &nbsp;·&nbsp; <samp>typescript, convex</samp><br>
-Autonomous research agent for your second brain. Built solo at Nozomio<br>
-Hackathon, EF SF.
-
-**[andriidrok.com](https://andriidrok.com)** &nbsp;·&nbsp; <samp>three.js, webgl</samp><br>
-Particle-morph portfolio: thousands of particles reshaping between scenes.
+**[ml-physical-modeling](https://github.com/jd314)** &nbsp;·&nbsp; <samp>python, pytorch, scikit-learn</samp><br>
+Physics-informed and data-driven models bridging physical systems with machine learning and analytical inference.
 
 <img src="./hd-stats.svg" width="620" alt="stats"/>
 
@@ -56,7 +61,7 @@ Particle-morph portfolio: thousands of particles reshaping between scenes.
 <img src="./hd-about-this-page.svg" width="620" alt="about this page"/>
 
 Every graphic here is generated, not embedded from anyone else's server.<br>
-`ascii.svg` is a photo pushed through a character ramp by<br>
+`ascii.svg` is rendered through a character ramp by<br>
 [`scripts/make_portrait.py`](scripts/make_portrait.py); the stat graphics and<br>
 these section headings are drawn by [a scheduled action](.github/workflows/stats.yml)<br>
 straight from the GitHub GraphQL API, once a day, committing only what changed.
@@ -68,8 +73,13 @@ strips CSS, so an image is the only way to put this page's own typeface on them.
 
 The typeface is [JetBrains Mono](scripts/fonts), subset to just the characters<br>
 each graphic draws and inlined as base64. That isn't only for looks: the<br>
-portrait's grid assumes an advance width of exactly 0.600 em, and a viewer whose<br>
+emblem's grid assumes an advance width of exactly 0.600 em, and a viewer whose<br>
 default monospace is narrower would otherwise see it squeezed.
 
-Language totals cover public repositories only. `year.svg` uses the portrait's<br>
-character ramp: `:` `+` `#` `@`, quiet to loud.
+Language totals cover public repositories only. `year.svg` uses the character<br>
+ramp: `:` `+` `#` `@`, quiet to loud.
+
+<div align="right">
+<sub style="font-size: 10px; opacity: 0.6;">Profile concept & generative visual engine inspired by <a href="https://github.com/andriidrok1">@andriidrok1</a></sub>
+</div>
+

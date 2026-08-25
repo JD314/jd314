@@ -30,50 +30,69 @@ revealed by a clipPath wipe with a cursor block riding its edge, staggered top
 to bottom, frozen at the end so it prints once and stops.
 """
 import argparse
+import os
 import sys
 
 import cv2
 import numpy as np
 from PIL import Image
-from rembg import remove
 
 RAMP = " .`:-=+*cs#%@"     # bright/sparse -> dark/dense; leading space = blank
-COLS = 90                  # below ~88 the face muddies; far above it dominates
+COLS = 80                  # column count for monospace grid
 CLAHE_CLIP = 3.0           # higher amplifies skin texture into noise
 GAMMA = 1.0                # ramp mapping exponent
-CURVE = 1.7                # the darkening curve — the difference-maker
-CROP_BOTTOM = 0.0          # fraction to trim off the bottom (torso, chair)
+CURVE = 1.7                # darkening curve
+CROP_BOTTOM = 0.0          # fraction to trim off bottom
 ROW_RATIO = 0.48           # monospace cells are about twice as tall as wide
 
-FG_LIGHT = "#6e7681"       # readable on GitHub light — the portrait's grey
-FG_DARK = "#c9d1d9"        # and its dark-mode step
-CHAR_W = 7.74              # 0.600 em at FONT_SIZE — keep these in step
+FG_LIGHT = "#6e7681"       # readable on GitHub light — the grey ink
+FG_DARK = "#c9d1d9"        # dark-mode step
+CHAR_W = 7.74              # 0.600 em at FONT_SIZE
 FONT_SIZE = 12.9
 LINE_H = 15
-ROW_DELAY = 0.09           # per-row stagger, seconds
+ROW_DELAY = 0.05           # per-row stagger, seconds
 FAMILY = "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
 
 
 def prep(path, crop=None):
-    """Cut out the background, even the local contrast, then darken."""
+    """Cut out background or handle high-contrast graphics, then normalize."""
     src = Image.open(path).convert("RGBA")
     if crop:
         src = src.crop(crop)
 
-    cut = remove(src)
-    alpha = np.array(cut.split()[-1])
+    # Check if image has solid white/light background (logo / emblem)
+    raw_gray = np.array(src.convert("L"))
+    if raw_gray.mean() > 180 and raw_gray.min() < 60:
+        # High-contrast logo graphic
+        mask = raw_gray < 240
+        if mask.any():
+            rows = np.where(mask.any(axis=1))[0]
+            cols = np.where(mask.any(axis=0))[0]
+            margin = 8
+            crop_box = (max(0, cols[0] - margin), max(0, rows[0] - margin),
+                        min(src.width, cols[-1] + margin), min(src.height, rows[-1] + margin))
+            src = src.crop(crop_box)
+            raw_gray = np.array(src.convert("L"))
+        return Image.fromarray(raw_gray)
 
-    # Composite onto white so everything outside the subject maps to the blank
-    # end of the ramp. Skip this and the background fills with @ and %.
-    white = Image.new("RGBA", cut.size, (255, 255, 255, 255))
-    gray = np.array(Image.alpha_composite(white, cut).convert("L"))
-
-    gray = cv2.bilateralFilter(gray, 11, 50, 50)      # smooth skin, keep edges
-    gray = cv2.createCLAHE(clipLimit=CLAHE_CLIP,
-                           tileGridSize=(8, 8)).apply(gray)
-    gray = (255.0 * (gray / 255.0) ** CURVE).astype("uint8")
-    gray[alpha < 20] = 255                            # force the matte to white
-    return Image.fromarray(gray)
+    # For photos, attempt rembg if available
+    try:
+        from rembg import remove
+        cut = remove(src)
+        alpha = np.array(cut.split()[-1])
+        white = Image.new("RGBA", cut.size, (255, 255, 255, 255))
+        gray = np.array(Image.alpha_composite(white, cut).convert("L"))
+        gray = cv2.bilateralFilter(gray, 11, 50, 50)
+        gray = cv2.createCLAHE(clipLimit=CLAHE_CLIP, tileGridSize=(8, 8)).apply(gray)
+        gray = (255.0 * (gray / 255.0) ** CURVE).astype("uint8")
+        gray[alpha < 20] = 255
+        return Image.fromarray(gray)
+    except Exception:
+        # Fallback without rembg
+        gray = cv2.bilateralFilter(raw_gray, 11, 50, 50)
+        gray = cv2.createCLAHE(clipLimit=CLAHE_CLIP, tileGridSize=(8, 8)).apply(gray)
+        gray = (255.0 * (gray / 255.0) ** CURVE).astype("uint8")
+        return Image.fromarray(gray)
 
 
 def to_lines(img, cols=COLS, gamma=GAMMA):
@@ -83,14 +102,17 @@ def to_lines(img, cols=COLS, gamma=GAMMA):
         w, h = img.size
 
     rows = int(cols * (h / w) * ROW_RATIO)
-    img = img.resize((cols, rows), Image.LANCZOS)
-    px = list(img.getdata())
+    img = img.resize((cols, rows), Image.Resampling.LANCZOS)
+    px = np.array(img, dtype=float)
+
+    # Invert so black/dark features are mapped to dense characters
+    norm = np.clip((255.0 - px) / 255.0 * 1.05, 0.0, 1.0)
     n = len(RAMP)
 
     out = []
     for r in range(rows):
         out.append("".join(
-            RAMP[min(n - 1, int((1 - px[r * cols + c] / 255.0) ** gamma * n))]
+            RAMP[min(n - 1, int((norm[r, c] ** gamma) * n))]
             for c in range(cols)
         ).rstrip())
 
@@ -128,7 +150,7 @@ def build_svg(lines, cols=COLS):
         p.append(f'<g clip-path="url(#c{i})"><text xml:space="preserve" '
                  f'x="{pad}" y="{y + 11.2:.1f}" class="a" '
                  f'font-size="{FONT_SIZE}">{safe}</text></g>')
-        # the cursor: a small block riding the wipe edge, gone once the row lands
+        # Cursor block riding the wipe edge
         p.append(f'<rect y="{y + 1}" width="6" height="12" class="a" '
                  f'opacity="0">'
                  f'<animate attributeName="x" from="{pad}" to="{pad + w:.1f}" '
@@ -142,11 +164,9 @@ def build_svg(lines, cols=COLS):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("photo")
+    ap.add_argument("photo", nargs="?", default="spider.jpg")
     ap.add_argument("out", nargs="?", default="ascii.svg")
-    ap.add_argument("--crop", help="left,top,right,bottom, applied first — crop "
-                                   "tight to the head so the whole grid goes to "
-                                   "the face")
+    ap.add_argument("--crop", help="left,top,right,bottom")
     ap.add_argument("--cols", type=int, default=COLS)
     ap.add_argument("--preview", action="store_true",
                     help="print the ASCII to the terminal as well")
@@ -166,7 +186,12 @@ def main():
     with open(args.out, "w", encoding="utf-8") as f:
         f.write(build_svg(lines, cols=args.cols))
     print(f"wrote {args.out} — {len(lines)} rows, {args.cols} columns")
-    print("next: python3 scripts/embed_portrait_font.py")
+
+    # Inline the font if embed_portrait_font exists
+    here = os.path.dirname(os.path.abspath(__file__))
+    embed_script = os.path.join(here, "embed_portrait_font.py")
+    if os.path.exists(embed_script):
+        os.system(f"{sys.executable} {embed_script} {args.out}")
 
 
 if __name__ == "__main__":

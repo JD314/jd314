@@ -15,7 +15,7 @@ the edge. Motion is SMIL because GitHub strips <script> from READMEs.
 
 Env:
   GITHUB_TOKEN  required
-  GH_LOGIN      user to summarise (default: andriidrok1)
+  GH_LOGIN      user to summarise (default: jd314)
   OUT_DIR       where to write (default: repository root)
 """
 import base64
@@ -89,8 +89,8 @@ def font_text():
 
 
 def font_head():
-    """Only the letters the section headings use."""
-    return face("jbmono-head.woff2", 600)
+    """Mono face for section headings."""
+    return face("jbmono-600.woff2", 600)
 
 WIDTH = 620            # every graphic shares one column width
 LEFT = 34              # shared left inset, so stacked blocks line up
@@ -461,13 +461,13 @@ def main():
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
         sys.exit("GITHUB_TOKEN is not set")
-    login = os.environ.get("GH_LOGIN", "andriidrok1")
+    login = os.environ.get("GH_LOGIN", "jd314")
     out_dir = os.environ.get("OUT_DIR", ".")
 
     s = summarise(fetch(login, token))
     files = {"stats.svg": draw_stats(s), "streak.svg": draw_streak(s),
              "langs.svg": draw_langs(s), "year.svg": draw_year(s)}
-    for word in ("about", "stack", "projects", "stats", "about this page"):
+    for word in ("about", "research", "stack", "projects", "stats", "about this page"):
         files[f"hd-{word.replace(' ', '-')}.svg"] = draw_heading(word)
 
     changed = [n for n, svg in files.items()
